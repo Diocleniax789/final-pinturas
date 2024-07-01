@@ -173,7 +173,7 @@ VAR
   writeln('===========================================');
   writeln('*** SE HA CARGADO EL REGISTRO CON EXITO ***');
   writeln('===========================================');
-  delay(2000); //////
+  delay(2000);
   END
  ELSE
   BEGIN   ////////
