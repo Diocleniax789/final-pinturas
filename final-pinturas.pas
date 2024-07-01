@@ -176,7 +176,7 @@ VAR
   delay(2000);
   END
  ELSE
-  BEGIN   ////////
+  BEGIN
    REPEAT
    reset(archivo_pinturas);
    writeln('CARGA DE DATOS DE PINTURA');
@@ -246,6 +246,58 @@ VAR
    END;
   END;
 
+PROCEDURE carga_pinturas_preparadas;
+VAR
+ cod_pin: integer;
+ BEGIN
+ IF verifica_tamanio_archivo_pinturas = true THEN
+  BEGIN
+  writeln();
+  writeln('===================================================================');
+  writeln('X NO HAY REGISTROS CARGADOS EN EL ARCHIVO PINTURAS. INTENTE LUEGO X');
+  writeln('===================================================================');
+  delay(2000);
+  END
+ ELSE
+  BEGIN
+
+  REPEAT
+  reset(archivo_mezclas);
+  reset(archivo_pinturas);
+  seek(archivo_pinturas,filepos(archivo_pinturas) - 1);
+  read(archivo_pinturas,registro_pinturas);
+  IF registro_pinturas.preparado = 's' THEN
+   BEGIN
+   cod_pin:= registro_pinturas.codp;
+   registro_mezclas.codp:= cod_pin;
+   writeln(' *** Codigo de pintura aniadido ***');
+   writeln();
+   write('>>> Ingrese pintura 1: ');
+   readln(pintura_1);
+   write('>>> Ingrese pintura 2: ');
+   readln(pintura_2);
+   write('>>> Ingrese pintura 3: ');
+   readln(pintura_3);
+
+  UNTIL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  END
+ END;
 
 
 
@@ -256,10 +308,11 @@ VAR
    REPEAT
    clrscr;
    writeln('1. Carga pinturas');
-   writeln('2. Generar pedido');
-   writeln('3. Actualizar precios');
-   writeln('4. Listado de pinturas preparadas');
-   writeln('5. Salir');
+   writeln('2. Carga pinturas preparadas');
+   writeln('3. Generar pedido');
+   writeln('4. Actualizar precios');
+   writeln('5. Listado de pinturas preparadas');
+   writeln('6. Salir');
    writeln();
    writeln('Seleccione una opcion: ');
    readln(opcion);
@@ -268,20 +321,24 @@ VAR
       clrscr;
       carga_pinturas;
       END;
-  {  2:BEGIN
+    2:BEGIN
+      clrscr;
+      carga_pinturas_preparadas;
+      END;
+  {  3:BEGIN
       clrscr;
       genera_pedido;
       END;
-    3:BEGIN
+    4:BEGIN
       clrscr;
       actualiza_precio;
       END;
-    4:BEGIN
+    5:BEGIN
       clrscr;
       listar_pinturas
       END;             }
    END;
-   UNTIL (opcion = 5);
+   UNTIL (opcion = 6);
    END;
 
 BEGIN
