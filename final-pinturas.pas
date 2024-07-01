@@ -1,4 +1,4 @@
-PROGRAM final-pinturas;
+PROGRAM final_pinturas;
 USES crt;
 
 TYPE
@@ -60,6 +60,7 @@ FUNCTION verifica_tamanio_archivo_pinturas(): boolean;
  close(archivo_pinturas);
  END;
 
+{
 FUNCTION valida_envase(): integer;
 VAR
  op: integer;
@@ -79,13 +80,55 @@ VAR
    writeln('VALOR INCORRECTO. INGRESE NUEVAMENTE');
   UNTIL (op >= 0) AND (op <= 3);
  valida_envase:= op;
- END;
+ END;   }
+
+PROCEDURE ordena_archivo_pinturas_por_cod_pintura;
+VAR
+   i,j: integer;
+   registro_aux: pinturas;
+   BEGIN
+   reset(archivo_pinturas);
+   FOR i:= 0 TO filesize(archivo_pinturas) - 2 DO
+    BEGIN
+    FOR j:= i + 1 TO filesize(archivo_pinturas) - 1 DO
+     BEGIN
+     seek(archivo_pinturas, i);
+     read(archivo_pinturas, registro_pinturas);
+     seek(archivo_pinturas, j);
+     read(archivo_pinturas, registro_aux);
+     IF registro_pinturas.codp > registro_aux.codp THEN
+      BEGIN
+      seek(archivo_pinturas,i);
+      write(archivo_pinturas,registro_aux);
+      seek(archivo_pinturas,j);
+      write(archivo_pinturas,registro_pinturas);
+      END;
+     END;
+    END;
+   END;
+
+FUNCTION existe_pintura(cod_pin: integer): boolean;
+VAR
+   f: boolean;
+   BEGIN
+   f:= false;
+   REPEAT
+   read(archivo_pinturas,registro_pinturas);
+   IF cod_pin = registro_pinturas.codp THEN
+    f:= true;
+   UNTIL eof(archivo_pinturas) OR (f = true);
+   IF f = true THEN
+    existe_pintura:= true
+   ELSE
+    existe_pintura:= false;
+   END;
 
 PROCEDURE carga_pinturas;
 VAR
- env,op,op1,f: integer;
+ opcion: string;
+ f,cod_pin: integer;
+ op1: char;
  BEGIN
- REPEAT
  IF verifica_tamanio_archivo_pinturas = true THEN
   BEGIN
   reset(archivo_pinturas);
@@ -98,9 +141,7 @@ VAR
   write('>>> Ingrese descripcion de pintura: ');
   readln(registro_pinturas.descripcion);
   writeln();
-  env:= valida_envase;
-  writeln();
-  write('>>> Ingrese el precios: ');
+  write('>>> Ingrese los precios: ');
   FOR f:= 0 TO 3 DO
    BEGIN
    writeln('Precio ',f);
@@ -122,7 +163,7 @@ VAR
    BEGIN
     writeln('Stock',f);
     writeln();
-    write('Ingrese Stock: ');
+    write('Ingrese los Stocks: ');
     readln(registro_pinturas.stock[f]);
    END;
   seek(archivo_pinturas,filesize(archivo_pinturas));
@@ -132,12 +173,79 @@ VAR
   writeln('===========================================');
   writeln('*** SE HA CARGADO EL REGISTRO CON EXITO ***');
   writeln('===========================================');
-  delay(2000);
+  delay(2000); //////
   END
  ELSE
+  BEGIN   ////////
+   REPEAT
+   reset(archivo_pinturas);
+   writeln('CARGA DE DATOS DE PINTURA');
+   writeln('-------------------------');
+   writeln();
+   write('>>> Ingrese codigo de pintura: ');
+   readln(cod_pin);
+   IF existe_pintura(cod_pin) = true THEN
+    BEGIN
+    writeln();
+    writeln('===============================');
+    writeln('X CODIGO DE PINTURA EXISTENTE X');
+    writeln('===============================');
+    writeln();
+    END
+   ELSE
+    BEGIN
+    registro_pinturas.codp:= cod_pin;
+    write('>>> Ingrese los precios: ');
+    FOR f:= 0 TO 3 DO
+     BEGIN
+     writeln('Precio ',f);
+     writeln();
+     write('Ingrese precio: ');
+     readln(registro_pinturas.precio[f]);
+     END;
+    writeln();
+    REPEAT
+     write('>>> Es preparada[s/n]?: ');
+     readln(op1);
+     IF (op1 <> 's') AND (op1 <> 'n') THEN
+      writeln('VALOR INCORRECTO. INGRESE NUEVAMENTE');
+    UNTIL (op1 = 's') OR (op1 = 'n');
+    registro_pinturas.preparado:= op1;
+    writeln();
+    write('>>> Ingrese el stock: ');
+    FOR f:= 0 TO 3 DO
+     BEGIN
+     writeln('Stock',f);
+     writeln();
+     write('Ingrese los Stocks: ');
+     readln(registro_pinturas.stock[f]);
+     END;
+    seek(archivo_pinturas,filesize(archivo_pinturas));
+    write(archivo_pinturas, registro_pinturas);
+    writeln();
+    writeln('===========================================');
+    writeln('*** SE HA CARGADO EL REGISTRO CON EXITO ***');
+    writeln('===========================================');
+    ordena_archivo_pinturas_por_cod_pintura;
+    END;
+    close(archivo_pinturas);
+    REPEAT
+    writeln();
+    writeln('Desea volver a cargar otro registro[s/n]?: ');
+    readln(opcion);
+    IF (opcion <> 's') AND (opcion <> 'n') THEN
+     BEGIN
+     writeln();
+     writeln('========================================');
+     writeln('X VALOR INCORRECTO. INGRESE NUEVAMENTE X');
+     writeln('========================================');
+     writeln();
+     END;
+    UNTIL (opcion = 's') OR (opcion = 'n');
+    UNTIL (opcion = 'n');
+   END;
+  END;
 
- UNTIL
- END;
 
 
 
@@ -158,9 +266,9 @@ VAR
    CASE opcion OF
     1:BEGIN
       clrscr;
-      carga_datos;
+      carga_pinturas;
       END;
-    2:BEGIN
+  {  2:BEGIN
       clrscr;
       genera_pedido;
       END;
@@ -171,7 +279,7 @@ VAR
     4:BEGIN
       clrscr;
       listar_pinturas
-      END;
+      END;             }
    END;
    UNTIL (opcion = 5);
    END;
@@ -180,12 +288,8 @@ BEGIN
 assign(archivo_pinturas,'C:\Users\JULIO\Desktop\final-pinturas\pinturas.dat');
 assign(archivo_mezclas,'C:\Users\JULIO\Desktop\final-pinturas\mezclas.dat');
 assign(archivo_pedidos,'C:\Users\JULIO\Desktop\final-pinturas\pedidos.dat');
-crea_archivos_pinturas;
-crea_archivos_mezclas;
-crea_archivos_pedidos;
+crea_archivo_pinturas;
+crea_archivo_mezclas;
+crea_archivo_pedidos;
 menu_principal;
-
-
-
-
 END.
