@@ -133,6 +133,7 @@ VAR
   BEGIN
   clrscr;
   reset(archivo_pinturas);
+  textcolor(cyan);
   writeln('CARGA DE DATOS DE PINTURA');
   writeln('-------------------------');
   writeln();
@@ -141,35 +142,44 @@ VAR
   writeln();
   write('>>> Ingrese descripcion de pintura: ');
   readln(registro_pinturas.descripcion);
-  writeln();
-  write('>>> Ingrese los precios: ');
+  textcolor(green);
   FOR f:= 0 TO 3 DO
    BEGIN
-   writeln('Precio ',f);
    writeln();
-   write('Ingrese precio: ');
+   writeln('- Precio ',f);
+   writeln();
+   write('>>> Ingrese precio: ');
    readln(registro_pinturas.precio[f]);
    END;
+  textcolor(yellow);
   writeln();
   REPEAT
   write('>>> Es preparada[s/n]?: ');
   readln(op1);
   IF (op1 <> 's') AND (op1 <> 'n') THEN
-   writeln('VALOR INCORRECTO. INGRESE NUEVAMENTE');
+   BEGIN
+   writeln();
+   textcolor(lightred);
+   writeln('========================================');
+   writeln('X VALOR INCORRECTO. INGRESE NUEVAMENTE X');
+   writeln('========================================');
+   writeln();
+   END;
   UNTIL (op1 = 's') OR (op1 = 'n');
   registro_pinturas.preparado:= op1;
-  writeln();
-  write('>>> Ingrese el stock: ');
+  textcolor(magenta);
   FOR f:= 0 TO 3 DO
    BEGIN
-    writeln('Stock',f);
-    writeln();
-    write('Ingrese los Stocks: ');
-    readln(registro_pinturas.stock[f]);
+   writeln();
+   writeln('- Stock',f);
+   writeln();
+   write('>>> Ingrese la cantidad: ');
+   readln(registro_pinturas.stock[f]);
    END;
   seek(archivo_pinturas,filesize(archivo_pinturas));
   write(archivo_pinturas, registro_pinturas);
   close(archivo_pinturas);
+  textcolor(lightgreen);
   writeln();
   writeln('===========================================');
   writeln('*** SE HA CARGADO EL REGISTRO CON EXITO ***');
@@ -179,6 +189,8 @@ VAR
  ELSE
   BEGIN
    REPEAT
+   clrscr;
+   textcolor(cyan);
    reset(archivo_pinturas);
    writeln('CARGA DE DATOS DE PINTURA');
    writeln('-------------------------');
@@ -187,6 +199,7 @@ VAR
    readln(cod_pin);
    IF existe_pintura(cod_pin) = true THEN
     BEGIN
+    textcolor(lightred);
     writeln();
     writeln('===============================');
     writeln('X CODIGO DE PINTURA EXISTENTE X');
@@ -195,34 +208,44 @@ VAR
     END
    ELSE
     BEGIN
+    textcolor(green);
     registro_pinturas.codp:= cod_pin;
-    write('>>> Ingrese los precios: ');
     FOR f:= 0 TO 3 DO
      BEGIN
-     writeln('Precio ',f);
      writeln();
-     write('Ingrese precio: ');
+     writeln('- Precio ',f);
+     writeln();
+     write('>>> Ingrese precio: ');
      readln(registro_pinturas.precio[f]);
      END;
     writeln();
     REPEAT
+     textcolor(yellow);
      write('>>> Es preparada[s/n]?: ');
      readln(op1);
      IF (op1 <> 's') AND (op1 <> 'n') THEN
-      writeln('VALOR INCORRECTO. INGRESE NUEVAMENTE');
+      BEGIN
+      textcolor(lightred);
+      writeln();
+      writeln('========================================');
+      writeln('X VALOR INCORRECTO. INGRESE NUEVAMENTE X');
+      writeln('========================================');
+      writeln();
+      END;
     UNTIL (op1 = 's') OR (op1 = 'n');
     registro_pinturas.preparado:= op1;
-    writeln();
-    write('>>> Ingrese el stock: ');
+    textcolor(magenta);
     FOR f:= 0 TO 3 DO
      BEGIN
-     writeln('Stock',f);
      writeln();
-     write('Ingrese los Stocks: ');
+     writeln(' - Stock',f);
+     writeln();
+     write('>>> Ingrese la cantidad: ');
      readln(registro_pinturas.stock[f]);
      END;
     seek(archivo_pinturas,filesize(archivo_pinturas));
     write(archivo_pinturas, registro_pinturas);
+    textcolor(lightgreen);
     writeln();
     writeln('===========================================');
     writeln('*** SE HA CARGADO EL REGISTRO CON EXITO ***');
@@ -231,11 +254,13 @@ VAR
     END;
     close(archivo_pinturas);
     REPEAT
+    textcolor(lightcyan);
     writeln();
     writeln('Desea volver a cargar otro registro[s/n]?: ');
     readln(opcion);
     IF (opcion <> 's') AND (opcion <> 'n') THEN
      BEGIN
+     textcolor(lightred);
      writeln();
      writeln('========================================');
      writeln('X VALOR INCORRECTO. INGRESE NUEVAMENTE X');
@@ -355,14 +380,13 @@ VAR
  END;
 END;
 
-
-
 PROCEDURE menu_principal;
 VAR
    opcion: integer;
    BEGIN
    REPEAT
    clrscr;
+   textcolor(white);
    writeln('1. Carga pinturas');
    writeln('2. Carga pinturas preparadas');
    writeln('3. Generar pedido');
