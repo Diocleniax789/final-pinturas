@@ -301,6 +301,7 @@ VAR
  BEGIN
  IF verifica_tamanio_archivo_pinturas = true THEN
   BEGIN
+  textcolor(lightred);
   writeln();
   writeln('===================================================================');
   writeln('X NO HAY REGISTROS CARGADOS EN EL ARCHIVO PINTURAS. INTENTE LUEGO X');
@@ -309,65 +310,230 @@ VAR
   END
  ELSE
   BEGIN
+  reset(archivo_pinturas);
+  writeln('PARA ASEGURARSE DE LA CARGA CORRECTA DE ESTE ARCHIVO PRIMERO VERIFIQUE ');
+  writeln('QUE LA PRIMER PINTURA QUE ENCUENTRA SEA PREPARADA');
+  writeln('-----------------------------------------------------------------------');
+  writeln();
+  write('>>> Ingrese codigo de pintura: ');
+  readln(cod_pin);
+  IF existe_pintura(cod_pin) = TRUE THEN
+   BEGIN
+   seek(archivo_pinturas,filepos(archivo_pinturas) - 1);
+   read(archivo_pinturas,registro_pinturas);
+   IF registro_pinturas.preparado = 's' THEN
+    BEGIN
+    textcolor(lightgreen);
+    writeln();
+    writeln('*** LA PINTURA ES PREPARADA ***');
+    writeln();
+    reset(archivo_mezclas);
+    registro_mezclas.codp:= cod_pin;
+    textcolor(white);
+    write('>>> Ingrese codigo de pintura(que sea base): ');
+    readln(pintura_1);
+    IF si_es_base(pintura_1) = true THEN
+     BEGIN
+     textcolor(lightgreen);
+     writeln();
+     writeln('*** PINTURA BASE ENCONTRADA ***');
+     writeln();
+     registro_mezclas.mezcla[0,0]:= pintura_1;
+     textcolor(white);
+     write('>>> Ingrese proporcion: ');
+     readln(registro_mezclas.mezcla[0,1]);
+     writeln();
+     write('>>> Ingrese codigo de pintura(que sea base): ');
+     readln(pintura_2);
+     IF si_es_base(pintura_2) = true THEN
+      BEGIN
+      textcolor(lightgreen);
+      writeln();
+      writeln('*** PINTURA BASE ENCONTRADA ***');
+      writeln();
+      registro_mezclas.mezcla[1,0]:= pintura_2;
+      textcolor(white);
+      write('>>> Ingrese proporcion: ');
+      readln(registro_mezclas.mezcla[1,1]);
+      writeln();
+      write('>>> Ingrese codigo de pintura(que sea base): ');
+      readln(pintura_3);
+      IF si_es_base(pintura_3) = true THEN
+       BEGIN
+       textcolor(lightgreen);
+       writeln();
+       writeln('*** PINTURA BASE ENCONTRADA ***');
+       writeln();
+       registro_mezclas.mezcla[2,0]:= pintura_3;
+       write('>>> Ingrese proporcion: ');
+       readln(registro_mezclas.mezcla[2,1]);
+       writeln();
+       seek(archivo_mezclas,filesize(archivo_mezclas));
+       write(archivo_mezclas,registro_mezclas);
+       textcolor(lightgreen);
+       writeln('======================================');
+       writeln('*** REGISTRO CARGADO CORRECTAMENTE ***');
+       writeln('=====================================');
+       writeln();
+       close(archivo_mezclas);
+       END
+      ELSE
+       BEGIN
+       textcolor(lightred);
+       writeln();
+       writeln('==========================');
+       writeln('X ESA PINTURA NO ES BASE X');
+       writeln('==========================');
+       writeln();
+       close(archivo_mezclas);
+       END;
+      END;
+      END
+     ELSE
+      BEGIN
+      textcolor(lightred);
+      writeln();
+      writeln('==========================');
+      writeln('X ESA PINTURA NO ES BASE X');
+      writeln('==========================');
+      writeln();
+      close(archivo_mezclas);
+      END;
+     END
+    ELSE
+     BEGIN
+     textcolor(lightred);
+     writeln();
+     writeln('==========================');
+     writeln('X ESA PINTURA NO ES BASE X');
+     writeln('==========================');
+     writeln();
+     close(archivo_mezclas);
+     END;
+     close(archivo_pinturas);
+     delay(2000);
+   END
+ ELSE
+  BEGIN
   REPEAT
   clrscr;
   reset(archivo_pinturas);
-  read(archivo_pinturas,registro_pinturas);
-  IF registro_pinturas.preparado = 's' THEN
+  writeln('PARA ASEGURARSE DE LA CARGA CORRECTA DE ESTE ARCHIVO PRIMERO VERIFIQUE ');
+  writeln('QUE LA PRIMER PINTURA QUE ENCUENTRA SEA PREPARADA');
+  writeln('-----------------------------------------------------------------------');
+  writeln();
+  write('>>> Ingrese codigo de pintura: ');
+  readln(cod_pin);
+  IF existe_pintura(cod_pin) = TRUE THEN
    BEGIN
-   reset(archivo_mezclas);
-   cod_pin:= registro_pinturas.codp;
-   registro_mezclas.codp:= cod_pin;
-   writeln(' *** Codigo de pintura aniadido ***');
+   textcolor(lightred);
    writeln();
-   write('>>> Ingrese pintura 1: ');
-   readln(pintura_1);
-   write('>>> Ingrese pintura 2: ');
-   readln(pintura_2);
-   write('>>> Ingrese pintura 3: ');
-   readln(pintura_3);
-   IF si_es_base(pintura_1) = true THEN
-    BEGIN
-    registro_mezclas.mezcla[0,0]:= pintura_1;
-    IF si_es_base(pintura_2) = true THEN
-     registro_mezclas.mezcla[1,0]:= pintura_2;
-      IF si_es_base(pintura_3) = true THEN
-       registro_mezclas.mezcla[2,0]:= pintura_3;
-   FOR f:= 0 TO 2 DO
-    BEGIN
-    writeln('Porporcion Nro ',f);
-    write('Ingrese proporcion: ');
-    readln(registro_mezclas.mezcla[f,1]);
-    END;
-    seek(archivo_mezclas,filesize(archivo_mezclas));
-    write(archivo_mezclas,registro_mezclas);
-    close(archivo_mezclas);
-    writeln();
-    writeln('=====================================');
-    writeln('*** REGISTRO CREADO CORRECTAMENTE ***');
-    writeln('=====================================');
-    END
-   ELSE
-    BEGIN
-    writeln('===================================');
-    writeln('X NO EXISTE ESE CODIGO DE PINTURA X');
-    writeln('===================================');
-    END;
-    END
+   writeln('=========================');
+   writeln('X ESA PINTURA YA EXISTE X');
+   writeln('=========================');
+   writeln();
+   END
   ELSE
    BEGIN
-   writeln();
-   writeln('==================================');
-   writeln('X ESA PINTURA MEZCLADA NO EXISTE X');
-   writeln('==================================');
-   writeln();
-   END;
-   close(archivo_pinturas);
+      BEGIN
+   seek(archivo_pinturas,filepos(archivo_pinturas) - 1);
+   read(archivo_pinturas,registro_pinturas);
+   IF registro_pinturas.preparado = 's' THEN
+    BEGIN
+    textcolor(lightgreen);
+    writeln();
+    writeln('*** LA PINTURA ES PREPARADA ***');
+    writeln();
+    reset(archivo_mezclas);
+    registro_mezclas.codp:= cod_pin;
+    textcolor(white);
+    write('>>> Ingrese codigo de pintura(que sea base): ');
+    readln(pintura_1);
+    IF si_es_base(pintura_1) = true THEN
+     BEGIN
+     textcolor(lightgreen);
+     writeln();
+     writeln('*** PINTURA BASE ENCONTRADA ***');
+     writeln();
+     registro_mezclas.mezcla[0,0]:= pintura_1;
+     textcolor(white);
+     write('>>> Ingrese proporcion: ');
+     readln(registro_mezclas.mezcla[0,1]);
+     writeln();
+     write('>>> Ingrese codigo de pintura(que sea base): ');
+     readln(pintura_2);
+     IF si_es_base(pintura_2) = true THEN
+      BEGIN
+      textcolor(lightgreen);
+      writeln();
+      writeln('*** PINTURA BASE ENCONTRADA ***');
+      writeln();
+      registro_mezclas.mezcla[1,0]:= pintura_2;
+      textcolor(white);
+      write('>>> Ingrese proporcion: ');
+      readln(registro_mezclas.mezcla[1,1]);
+      writeln();
+      write('>>> Ingrese codigo de pintura(que sea base): ');
+      readln(pintura_3);
+      IF si_es_base(pintura_3) = true THEN
+       BEGIN
+       textcolor(lightgreen);
+       writeln();
+       writeln('*** PINTURA BASE ENCONTRADA ***');
+       writeln();
+       registro_mezclas.mezcla[2,0]:= pintura_3;
+       write('>>> Ingrese proporcion: ');
+       readln(registro_mezclas.mezcla[2,1]);
+       writeln();
+       seek(archivo_mezclas,filesize(archivo_mezclas));
+       write(archivo_mezclas,registro_mezclas);
+       textcolor(lightgreen);
+       writeln('======================================');
+       writeln('*** REGISTRO CARGADO CORRECTAMENTE ***');
+       writeln('=====================================');
+       writeln();
+       close(archivo_mezclas);
+       END
+      ELSE
+       BEGIN
+       textcolor(lightred);
+       writeln();
+       writeln('==========================');
+       writeln('X ESA PINTURA NO ES BASE X');
+       writeln('==========================');
+       writeln();
+       close(archivo_mezclas);
+       END
+      END
+     ELSE
+      BEGIN
+      textcolor(lightred);
+      writeln();
+      writeln('==========================');
+      writeln('X ESA PINTURA NO ES BASE X');
+      writeln('==========================');
+      writeln();
+      close(archivo_mezclas);
+      END;
+     END
+    ELSE
+     BEGIN
+     textcolor(lightred);
+     writeln();
+     writeln('==========================');
+     writeln('X ESA PINTURA NO ES BASE X');
+     writeln('==========================');
+     writeln();
+     close(archivo_mezclas);
+     END;
+     close(archivo_pinturas);
+     delay(2000);
+    END;
   REPEAT
-  writeln();
-  write('Desea volver a ingresar otra pintura mezclada[s/n]?: ');
-  readln(opcion);
-  IF (opcion <> 's') AND (opcion <> 'n') THEN
+   writeln();
+   write('Desea volver a ingresar otra pintura mezclada[s/n]?: ');
+   readln(opcion);
+   IF (opcion <> 's') AND (opcion <> 'n') THEN
    BEGIN
    writeln();
    writeln('======================================');
@@ -377,7 +543,7 @@ VAR
    END;
   UNTIL (opcion = 's') OR (opcion = 'n');
   UNTIL (opcion = 'n');
- END;
+  END;
 END;
 
 PROCEDURE menu_principal;
